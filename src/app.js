@@ -3,7 +3,7 @@ import cors from "cors";
 import notFound from "./app/middlewares/notFound";
 import router from "./app/routes";
 import handleGlobalError from "./app/middlewares/globalErrorHandler";
-// import cookieParser from "cookie-parser";
+import cookieParser from "cookie-parser";
 const app = express();
 
 const allowedOrigins = ["http://localhost:5173"];
@@ -19,7 +19,7 @@ app.use(
   })
 );
 
-// app.use(cookieParser());
+app.use(cookieParser());
 
 // application routes
 app.use("/api", router);
