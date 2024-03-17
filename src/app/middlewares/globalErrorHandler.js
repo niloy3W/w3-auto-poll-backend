@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import mongoose from "mongoose";
 import { ZodError } from "zod";
 import handleZodError from "../errors/handleZodError";
@@ -7,7 +5,8 @@ import handleDuplicateError from "../errors/handleDuplicateError";
 import AppError from "../errors/AppError";
 import { handleMongooseError } from "../errors/handleValidationError";
 import { handleCastError } from "../errors/handleCastError";
-import { JsonWebTokenError } from "jsonwebtoken";
+import pkg from "jsonwebtoken";
+const { JsonWebTokenError } = pkg;
 
 const handleGlobalError = (error, req, res, next) => {
   let statusCode = 500;
