@@ -18,7 +18,6 @@ const auth = (...requiredRoles) => {
     let decoded;
     try {
       decoded = jwt.verify(token, config.jwt_access_secret);
-      console.log(decoded);
     } catch (error) {
       throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized!");
     }

@@ -52,19 +52,29 @@ const createUserIntoDB = async (userData) => {
 
 // get all user
 const getAllUsersFromDB = async () => {
-  const result = await User.find();
+  const result = await User.find().populate("children");
   return result;
 };
 
 // get specific user
 const getSpecificUsersFromDB = async (id) => {
-  const result = await User.findById(id);
+  const result = await User.findById(id).populate("children");
   return result;
 };
 
 // assign parent
 const assignParent = async ({ userId, parentId }) => {
   const MAX_CHILDREN = 3;
+
+  // Check if the parent already has a user assigned to them
+  const isAssigned = await User.findOne({ _id: userId, assigned: true });
+
+  if (isAssigned) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This User already has a user assigned to them"
+    );
+  }
 
   // Check if userId is equal to parentId
   if (userId === parentId) {
@@ -88,6 +98,11 @@ const assignParent = async ({ userId, parentId }) => {
       "Not enough slots available for children"
     );
   }
+  // Update assigned property to false for previously assigned user
+  const result = await User.findByIdAndUpdate(
+    { _id: userId },
+    { assigned: true }
+  );
 
   // Check if userId already exists in parentUser's children array
   if (parentUser.children.includes(userId)) {
@@ -101,9 +116,8 @@ const assignParent = async ({ userId, parentId }) => {
   parentUser.children.push(userId);
 
   // Save the updated parent user document
-  const result = await parentUser.save();
 
-  // Return success or any relevant data
+  await parentUser.save();
   return result;
 };
 
