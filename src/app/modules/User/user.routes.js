@@ -21,9 +21,9 @@ router.get(
   auth(USER_ROLE.user, USER_ROLE.admin),
   UserController.getSpecificUsers
 );
-router.post(
+router.put(
   "/assign-parent/:id",
-  auth(USER_ROLE.user, USER_ROLE.admin),
+  // auth(USER_ROLE.user, USER_ROLE.admin),
   UserController.assignParent
 );
 

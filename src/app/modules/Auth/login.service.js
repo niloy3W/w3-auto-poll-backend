@@ -3,6 +3,7 @@ import AppError from "../../errors/AppError";
 import { User } from "../User/user.model";
 import { createToken } from "./auth.utils";
 import config from "../../config";
+import bcrypt from "bcrypt";
 
 // login user
 const loginAUser = async (payload) => {
@@ -15,8 +16,8 @@ const loginAUser = async (payload) => {
   }
 
   // checking if the password matched or not
-
-  if (!(await User.isPasswordMatched(payload?.password, user?.password))) {
+  console.log(payload.password, user.password);
+  if (!(await User.isPasswordMatched(payload.password, user.password))) {
     throw new AppError(httpStatus.FORBIDDEN, "Password do not matched");
   }
 

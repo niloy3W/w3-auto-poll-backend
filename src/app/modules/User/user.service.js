@@ -45,6 +45,7 @@ const createUserIntoDB = async (userData) => {
     password: userData.password,
     role: role,
   });
+
   await newUser.save();
 
   return newUser;
@@ -98,11 +99,6 @@ const assignParent = async ({ userId, parentId }) => {
       "Not enough slots available for children"
     );
   }
-  // Update assigned property to false for previously assigned user
-  const result = await User.findByIdAndUpdate(
-    { _id: userId },
-    { assigned: true }
-  );
 
   // Check if userId already exists in parentUser's children array
   if (parentUser.children.includes(userId)) {
@@ -112,12 +108,27 @@ const assignParent = async ({ userId, parentId }) => {
     );
   }
 
-  // Push the userId into the children array
-  parentUser.children.push(userId);
+  const result = await User.findByIdAndUpdate(
+    userId,
+    { assigned: true },
+    { new: true }
+  );
 
-  // Save the updated parent user document
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
 
-  await parentUser.save();
+  // Push the userId into the children array using $addToSet to avoid duplicates
+  const update = {
+    $addToSet: { children: userId },
+  };
+
+  // Using upsert: true ensures that if the parentUser document doesn't exist, it will be created
+  const options = { upsert: true };
+
+  // Update the parentUser document
+  await User.findByIdAndUpdate(parentId, update, options);
+
   return result;
 };
 
